@@ -1,6 +1,7 @@
 {
   "name": "@openpcb/editor",
   "version": "0.1.0",
+  "license": "MIT",
   "description": "OpenBoard: browser-based PCB layout editor that exports SPECCTRA DSN, runs OpenRoute, and imports sessions",
   "type": "module",
   "scripts": {

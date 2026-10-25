@@ -1,6 +1,7 @@
 {
   "name": "@openpcb/schematic",
   "version": "0.1.0",
+  "license": "MIT",
   "description": "OpenSchematic: schematic capture (OrCAD Capture / System Capture counterpart) for the OpenBoard suite",
   "type": "module",
   "scripts": {

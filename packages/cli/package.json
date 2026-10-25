@@ -1,6 +1,7 @@
 {
   "name": "@openpcb/cli",
   "version": "0.1.0",
+  "license": "MIT",
   "description": "openpcb: agent-friendly command line for OpenBoard projects and OpenRoute (JSON in, JSON out)",
   "type": "module",
   "bin": {

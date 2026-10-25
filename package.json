@@ -1,6 +1,7 @@
 {
   "name": "openpcb-suite",
   "version": "0.1.0",
+  "license": "MIT",
   "private": true,
   "description": "OpenRoute (shape-aware PCB autorouter, DSN in / SES out), OpenBoard (browser PCB editor) and the openpcb agent CLI - our own implementation of the Allegro PCB Router / PCB Editor pair",
   "type": "module",

@@ -17,6 +17,7 @@
 <p align="center">
   <a href="https://github.com/ajisrawi/openpcb/releases/latest"><img alt="release" src="https://img.shields.io/github/v/release/ajisrawi/openpcb?include_prereleases"></a>
   <img alt="platform" src="https://img.shields.io/badge/platform-Windows-0078d4">
+  <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-green"></a>
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-no%20runtime%20deps-3178c6">
 </p>
 
@@ -132,6 +133,10 @@ npm test -w @openpcb/cli         # board, schematic and integration tests
 ```
 
 Some import tests compare against vendor sample files and are skipped when those are not installed (set `CADENCE_HOME` to an SPB install to run them).
+
+## License
+
+[MIT](LICENSE)
 
 ---
 

@@ -1,6 +1,7 @@
 {
   "name": "@openpcb/desktop",
   "version": "0.1.0",
+  "license": "MIT",
   "description": "OpenBoard + OpenRoute + OpenSchematic Windows desktop application with the openpcb agent CLI",
   "private": true,
   "main": "main.cjs",

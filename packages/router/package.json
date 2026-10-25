@@ -1,6 +1,7 @@
 {
   "name": "@openpcb/router",
   "version": "0.1.0",
+  "license": "MIT",
   "description": "OpenRoute: adaptive multi-pass PCB autorouter speaking the SPECCTRA design language (DSN in, SES out, do-file scripting)",
   "type": "module",
   "main": "dist/index.js",
