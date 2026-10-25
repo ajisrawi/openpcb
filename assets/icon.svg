@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="mask" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#139a6e"/>
+      <stop offset="1" stop-color="#075239"/>
+    </linearGradient>
+    <linearGradient id="cu" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffd27a"/>
+      <stop offset="1" stop-color="#e09a2b"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="240" height="240" rx="52" fill="url(#mask)"/>
+  <rect x="8" y="8" width="240" height="240" rx="52" fill="none" stroke="#ffffff" stroke-opacity=".12" stroke-width="4"/>
+  <!-- copper traces -->
+  <g fill="none" stroke="url(#cu)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M100 92 V70 L76 46 H52"/>
+    <path d="M156 92 V70 L180 46 H204"/>
+    <path d="M100 164 V186 L76 210 H52"/>
+    <path d="M156 164 V186 L180 210 H204"/>
+    <path d="M92 128 H48"/>
+    <path d="M164 128 H208"/>
+  </g>
+  <!-- vias -->
+  <g fill="url(#cu)">
+    <circle cx="48" cy="46" r="15"/><circle cx="208" cy="46" r="15"/>
+    <circle cx="48" cy="210" r="15"/><circle cx="208" cy="210" r="15"/>
+    <circle cx="44" cy="128" r="15"/><circle cx="212" cy="128" r="15"/>
+  </g>
+  <g fill="#063a29">
+    <circle cx="48" cy="46" r="6"/><circle cx="208" cy="46" r="6"/>
+    <circle cx="48" cy="210" r="6"/><circle cx="208" cy="210" r="6"/>
+    <circle cx="44" cy="128" r="6"/><circle cx="212" cy="128" r="6"/>
+  </g>
+  <!-- chip -->
+  <rect x="84" y="84" width="88" height="88" rx="14" fill="#0f172a"/>
+  <rect x="84" y="84" width="88" height="88" rx="14" fill="none" stroke="#e5e7eb" stroke-opacity=".35" stroke-width="3"/>
+  <circle cx="100" cy="100" r="5" fill="#e5e7eb" fill-opacity=".7"/>
+  <!-- the "O" -->
+  <circle cx="128" cy="128" r="22" fill="none" stroke="url(#cu)" stroke-width="10"/>
+</svg>

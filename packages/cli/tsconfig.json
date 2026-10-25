@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022", "DOM"],
+    "rootDir": "..",
+    "outDir": "dist",
+    "strict": true,
+    "skipLibCheck": true,
+    "sourceMap": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "../editor/src/model.ts",
+    "../editor/src/footprints.ts",
+    "../editor/src/connectivity.ts",
+    "../editor/src/dsnio.ts",
+    "../editor/src/drc.ts"
+  ]
+}

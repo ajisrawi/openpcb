@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenBoard PCB Editor</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header id="topbar">
+  <span class="brand">OpenBoard <small>+ OpenRoute</small></span>
+  <div class="group">
+    <button id="btn-new">New</button>
+    <button id="btn-demo">Demo board</button>
+    <button id="btn-open">Open…</button>
+    <button id="btn-save">Save</button>
+  </div>
+  <div class="group">
+    <button id="btn-export-dsn" title="File – Export – Router (.dsn)">Export DSN</button>
+    <button id="btn-import-dsn" title="Import a SPECCTRA design">Import DSN…</button>
+    <button id="btn-import-ses" title="File – Import – Router (.ses)">Import SES…</button>
+  </div>
+  <div class="group">
+    <button id="btn-route" class="primary" title="Route – PCB Router – Route Automatic">Route Automatic</button>
+    <button id="btn-route-custom" title="Route – PCB Router – Route Custom…">Route Custom…</button>
+    <button id="btn-unroute">Unroute all</button>
+    <button id="btn-route-net" title="Route – Connect: autoroute the selected / highlighted nets, keeping all other copper">Route net</button>
+    <label title="When a hand-drawn trace crowds other nets' autorouted copper, rip it up and reroute it around the new trace"><input type="checkbox" id="chk-shove" checked> Shove</label>
+    <button id="btn-place" title="Place – Autoplace (selected parts, or all unlocked parts)">Autoplace</button>
+    <button id="btn-quickplace" title="Place – Quickplace: rows by reference designator">Quickplace</button>
+    <button id="btn-drc">DRC</button>
+    <button id="btn-gerber" title="File – Export – Gerber and drill (zip)">Gerbers</button>
+    <button id="btn-assembly" title="File – Export – BOM and pick-and-place (zip)">BOM/CPL</button>
+    <button id="btn-import-net" title="File – Import – KiCad netlist (.net)">Import netlist…</button>
+    <button id="btn-import-fp" title="File – Import – KiCad footprint (.kicad_mod)">Import footprint…</button>
+    <button id="btn-testpoints" title="Manufacture – Testprep: add a test pad to every net without probe access">Test points</button>
+    <button id="btn-autoswap" title="Place – Autoswap: pin swaps within swap groups and swaps of identical parts that shorten nets">Autoswap</button>
+    <button id="btn-tune" title="Route – Delay/Phase Tune: serpentines (pairs: phase bumps) to the length rules, for the highlighted/selected nets or all">Tune</button>
+    <button id="btn-detune" title="Route – Remove Tuning">Detune</button>
+    <button id="btn-smooth" title="Route – Gloss: smooth (gridless pull-tight of unlocked traces; Shift = any angle)">Smooth</button>
+    <button id="btn-stitch" title="Place – Via Array: stitching vias for a net on a grid">Stitch</button>
+    <button id="btn-fence" title="Shield Generator: GND guard vias along the highlighted/selected net">Fence</button>
+  </div>
+  <div class="group">
+    <select id="sel-export" title="File – Export"><option value="">Export…</option><option>DXF</option><option>PDF</option><option>GDSII</option><option>ODB++</option><option>IPC-2581</option><option>STEP</option><option>IDF</option><option>IDX</option><option>Netlist (KiCad)</option><option>Netlist (Telesis)</option></select>
+    <select id="sel-import" title="File – Import"><option value="">Import…</option><option>KiCad PCB</option><option>Eagle board</option><option>Gerber (onto active layer)</option></select>
+    <select id="sel-fab" title="Manufacture"><option value="">Manufacture…</option><option>Panelize</option><option>Copper thieving</option><option>Backdrill (highlighted net)</option><option>Impedance coupon</option><option>Variant BOM/CPL</option><option>Rename refdes</option></select>
+    <select id="sel-analyze" title="Analyze"><option value="">Analyze…</option><option>Signal integrity</option><option>IR drop (highlighted net)</option><option>EMI rules</option><option>Current capacity</option><option>3D clearance</option></select>
+    <select id="sel-rf" title="RF PCB"><option value="">RF…</option><option>RF line</option><option>RF stub</option><option>Radial stub</option><option>Taper</option><option>Coupled lines</option><option>Ground void (highlighted net)</option><option>Edit RF element</option></select>
+    <select id="sel-pkg" title="Package / wire bonding"><option value="">Package…</option><option>Bond fingers (selected die)</option><option>Bond wire</option><option>Bond profile</option><option>Bond report</option></select>
+    <select id="sel-flex" title="Rigid-flex"><option value="">Flex…</option><option>Flex zone</option><option>Bend area</option><option>Stiffener</option></select>
+    <button id="btn-script" title="OpenSKILL script console">Script</button>
+    <button id="btn-collab" title="Multi-user collaboration">Collaborate</button>
+    <button id="btn-3d" title="View – 3D canvas">3D</button>
+  </div>
+  <div class="group">
+    <label>Layer <select id="sel-layer"></select></label>
+    <label><input type="checkbox" id="chk-rats" checked> Ratsnest</label>
+    <label><input type="checkbox" id="chk-refs" checked> Refs</label>
+  </div>
+  <input type="file" id="file-open" accept=".json,.openboard" hidden>
+  <input type="file" id="file-dsn" accept=".dsn" hidden>
+  <input type="file" id="file-ses" accept=".ses,.rte" hidden>
+</header>
+<main id="main">
+  <aside id="left">
+    <section>
+      <h3>Tools</h3>
+      <div class="tools">
+        <button data-tool="select" class="tool active" title="Select / move (Esc)">Select</button>
+        <button data-tool="place" class="tool" title="Place footprint (P)">Place</button>
+        <button data-tool="route" class="tool" title="Draw trace (T)">Trace</button>
+        <button data-tool="via" class="tool" title="Add via (V)">Via</button>
+        <button data-tool="net" class="tool" title="Assign pins to a net (N)">Net</button>
+        <button data-tool="keepout" class="tool" title="Draw keepout rectangle (K)">Keepout</button>
+        <button data-tool="zone" class="tool" title="Draw copper pour rectangle for the active net (Z)">Zone</button>
+        <button data-tool="measure" class="tool" title="Measure distance between two points (M)">Measure</button>
+        <button data-tool="text" class="tool" title="Add silkscreen / fab text (X)">Text</button>
+        <button data-tool="dimension" class="tool" title="Add a linear dimension on the fab drawing (D)">Dimension</button>
+        <button data-tool="room" class="tool" title="Draw a placement room for the selected parts (O)">Room</button>
+      </div>
+      <div class="hint">R rotate · F flip · Del delete · Ctrl+Z / Ctrl+Y undo/redo · Ctrl+C / Ctrl+V copy/paste at cursor · Enter finish trace · wheel zoom · drag pan (middle/space)</div>
+    </section>
+    <section>
+      <h3>Footprints</h3>
+      <select id="sel-footprint" size="12"></select>
+      <label>Ref prefix <input id="inp-prefix" value="U" size="3"></label>
+    </section>
+    <section>
+      <h3>Layers</h3>
+      <div id="layer-list"></div>
+      <button id="btn-stackup" title="Toggle 2 / 4 layer stack-up">Toggle 2/4 layers</button>
+    </section>
+  </aside>
+  <div id="center">
+    <canvas id="board"></canvas>
+    <canvas id="board3d" hidden></canvas>
+    <div id="status"></div>
+  </div>
+  <aside id="right">
+    <section>
+      <h3>Properties</h3>
+      <div id="props" class="props"></div>
+    </section>
+    <section>
+      <h3>Rules</h3>
+      <div class="props">
+        <label>Width <input id="rule-width" type="number" step="0.05" min="0.05"> mm</label>
+        <label>Clearance <input id="rule-clear" type="number" step="0.05" min="0.05"> mm</label>
+        <label>Via Ø <input id="rule-via" type="number" step="0.05" min="0.2"> mm</label>
+        <label>Via drill <input id="rule-drill" type="number" step="0.05" min="0.1"> mm</label>
+        <label>Board W <input id="rule-w" type="number" step="1" min="10"> mm</label>
+        <label>Board H <input id="rule-h" type="number" step="1" min="10"> mm</label>
+        <details><summary>Manufacturing rules</summary>
+        <div class="props">
+        <label>Min track <input id="rule-minTrackWidth" type="number" step="0.01" min="0.01"> mm</label>
+        <label>Annular ring <input id="rule-minAnnularRing" type="number" step="0.01" min="0"> mm</label>
+        <label>Hole→copper <input id="rule-holeToCopper" type="number" step="0.01" min="0"> mm</label>
+        <label>Hole→hole <input id="rule-holeToHole" type="number" step="0.01" min="0"> mm</label>
+        <label>Silk→copper <input id="rule-silkToCopper" type="number" step="0.01" min="0"> mm</label>
+        <label>Silk width <input id="rule-silkWidth" type="number" step="0.01" min="0.01"> mm</label>
+        <label>Mask expansion <input id="rule-maskExpansion" type="number" step="0.01" min="0"> mm</label>
+        <label>Mask sliver <input id="rule-minMaskSliver" type="number" step="0.01" min="0"> mm</label>
+        <label>Microvia Ø min <input id="rule-minMicroviaDiameter" type="number" step="0.01" min="0"> mm</label>
+        <label>Microvia drill min <input id="rule-minMicroviaDrill" type="number" step="0.01" min="0"> mm</label>
+        <label>Laser hole→copper <input id="rule-laserHoleToCopper" type="number" step="0.01" min="0"> mm</label>
+        <label>Laser hole→hole <input id="rule-laserHoleToHole" type="number" step="0.01" min="0"> mm</label>
+        <label>Parallel gap <input id="rule-parallelGap" type="number" step="0.01" min="0"> mm</label>
+        <label>Parallel limit <input id="rule-parallelLimit" type="number" step="0.5" min="0"> mm</label>
+        <label>Tandem gap <input id="rule-tandemGap" type="number" step="0.01" min="0"> mm</label>
+        <label>Tandem limit <input id="rule-tandemLimit" type="number" step="0.5" min="0"> mm</label>
+        <label>Via length <input id="rule-viaLength" type="number" step="0.1" min="0"> mm</label>
+        </div>
+        </details>
+        <button id="btn-constraints">Constraints… (pairs, lengths, zones)</button>
+        <button id="btn-fpedit" title="Footprint editor: pads of the selected part's footprint (or a new one)">Footprint editor…</button>
+      </div>
+    </section>
+    <section>
+      <h3>Nets <button id="btn-add-net" class="mini">+</button></h3>
+      <div id="net-list" class="list"></div>
+    </section>
+    <section>
+      <h3>DRC results</h3>
+      <div id="drc-list" class="list"></div>
+    </section>
+  </aside>
+</main>
+<footer id="console"><pre id="log"></pre></footer>
+<dialog id="dlg-route">
+  <form method="dialog">
+    <h3>Route Custom — router do-file</h3>
+    <p class="hint">The editor exports the board as a SPECCTRA .dsn, runs OpenRoute with this script in a worker, and imports the .ses session. Edit the commands as you would an Allegro <code>_route.do</code>.</p>
+    <textarea id="route-script" rows="12" spellcheck="false"></textarea>
+    <label><input type="checkbox" id="chk-keep"> Keep existing autorouted traces as obstacles</label>
+    <menu>
+      <button value="cancel">Cancel</button>
+      <button value="ok" class="primary">Run router</button>
+    </menu>
+  </form>
+</dialog>
+<dialog id="dlg-constraints">
+  <form method="dialog">
+    <h3>Constraints</h3>
+    <p class="hint">One entry per line. Differential pairs: <code>NAME P_NET N_NET gap tolerance maxUncoupled maxSkew</code> (mm). Length groups: <code>NAME tolerance net1 net2 …</code>. Net length limits: <code>NET min max</code> (use - for none). Zones: <code>NET LAYER x1 y1 x2 y2 [static]</code>.</p>
+    <label>Differential pairs<textarea id="cons-pairs" rows="4" spellcheck="false"></textarea></label>
+    <label>Length groups<textarea id="cons-groups" rows="3" spellcheck="false"></textarea></label>
+    <label>Net length limits<textarea id="cons-lengths" rows="3" spellcheck="false"></textarea></label>
+    <label>Zones<textarea id="cons-zones" rows="4" spellcheck="false"></textarea></label>
+    <label>Via types (blind/buried spans): <code>diameter drill fromLayer toLayer</code><textarea id="cons-vias" rows="3" spellcheck="false"></textarea></label>
+    <label>Net classes: <code>NAME width clearance [vias=Via[0-1]_250:100_um,…] [layers=F.Cu,…] net1 net2 …</code> (- = board rule)<textarea id="cons-classes" rows="4" spellcheck="false"></textarea></label>
+    <label>Class-to-class spacing: <code>CLASS_A CLASS_B clearance</code><textarea id="cons-spacing" rows="2" spellcheck="false"></textarea></label>
+    <label>Constraint regions: <code>NAME x1 y1 x2 y2 width clearance [classes…]</code> (override net/class rules inside)<textarea id="cons-regions" rows="2" spellcheck="false"></textarea></label>
+    <menu><button value="cancel">Cancel</button><button value="ok" class="primary">Apply</button></menu>
+  </form>
+</dialog>
+<dialog id="dlg-fpedit">
+  <form method="dialog">
+    <h3>Footprint editor</h3>
+    <p class="hint">One pad per line: <code>id x y w h shape [th drill] [rot]</code> (mm, shape rect | circle | oval; <code>th 1.0</code> = through-hole with drill). Silkscreen: one polyline per line, <code>x1 y1 x2 y2 …</code>. Saving under a new name creates a footprint; parts using the old name keep it.</p>
+    <label>Name <input id="fp-name" size="40"></label>
+    <label>Pads<textarea id="fp-pads" rows="10" spellcheck="false"></textarea></label>
+    <label>Silkscreen<textarea id="fp-silk" rows="4" spellcheck="false"></textarea></label>
+    <menu><button value="cancel">Cancel</button><button value="ok" class="primary">Save</button></menu>
+  </form>
+</dialog>
+<dialog id="dlg-net">
+  <form method="dialog">
+    <h3>Net name</h3>
+    <input id="net-name" placeholder="e.g. SDA">
+    <menu><button value="cancel">Cancel</button><button value="ok" class="primary">OK</button></menu>
+  </form>
+</dialog>
+<dialog id="dlg-script">
+  <form method="dialog">
+    <h3>OpenSKILL console</h3>
+    <p class="hint">SKILL syntax (<code>f(a b)</code> or <code>(f a b)</code>, <code>x = 1</code>, <code>obj-&gt;prop</code>, <code>foreach</code>, <code>procedure</code> …) with the axl design functions: <code>axlDBGetDesign()</code>, <code>axlSelectByName("COMPONENT" list("U1"))</code>, <code>axlDBCreateLine(net layer width points)</code>, <code>axlTransformObject(obj ?move list(dx dy) ?angle a)</code>, <code>axlDRC()</code>. Edits can be undone with Ctrl+Z.</p>
+    <textarea id="script-src" rows="10" spellcheck="false">design = axlDBGetDesign()
+foreach(c design->components
+  when(c->side == "bottom" printf("%s at %L
+" c->refdes c->xy)))
+length(design->nets)</textarea>
+    <pre id="script-out" style="max-height:200px;overflow:auto;background:#111;color:#cfc;padding:6px"></pre>
+    <menu><button value="cancel">Close</button><button id="script-run" class="primary">Run</button></menu>
+  </form>
+</dialog>
+<dialog id="dlg-collab">
+  <form method="dialog">
+    <h3>Collaboration</h3>
+    <p class="hint">Start a server with <code>openpcb collab-serve board.openboard.json --port 7777</code>, then join. Edits are shared live; locks and partitions keep others out of your objects and areas; checkpoints are named versions anyone can restore.</p>
+    <label>Server <input id="collab-url" value="ws://localhost:7777" size="30"></label>
+    <label>Name <input id="collab-name" value="me" size="12"></label>
+    <button id="collab-connect">Connect / disconnect</button>
+    <p>Online: <span id="collab-users">not connected</span></p>
+    <pre id="collab-chat" style="height:140px;overflow:auto;background:#111;color:#ddd;padding:6px"></pre>
+    <input id="collab-msg" placeholder="message" size="40"> <button id="collab-send">Send</button>
+    <p><button id="collab-partition">Own the visible area</button> <button id="collab-lock">Lock selected parts</button> <button id="collab-checkpoint">Checkpoint…</button> <button id="collab-history">Versions</button> <button id="collab-restore">Restore…</button></p>
+    <menu><button value="cancel">Close</button></menu>
+  </form>
+</dialog>
+<script type="module" src="app.js"></script>
+</body>
+</html>

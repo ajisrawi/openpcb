@@ -1,0 +1,14 @@
+#ROUTING STATUS <<< demo >>>
+Nets         =       14   Connections         =       38
+Completion   =  100.00%   Unconnections       =        0
+Conflicts    =        0   Total Vias          =       38
+Routed length=    696.375 mm
+# Overall Routing Time: 1.0s
+
+  Kind   Pass | Unroutes | Conflicts |  Vias |  Length(mm) |   Time
+  fanout    1 |       38 |         0 |     0 |        0.00 |    0.0s
+  route     2 |        0 |        30 |    55 |      687.38 |    0.3s
+  route     3 |        0 |         0 |    59 |      688.95 |    0.1s
+  clean     4 |        0 |         0 |    41 |      697.05 |    0.2s
+  clean     5 |        0 |         0 |    38 |      696.38 |    0.2s
+  clean     7 |        0 |         0 |    38 |      696.38 |    0.2s

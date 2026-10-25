@@ -1,0 +1,15 @@
+{
+  "name": "@openpcb/router",
+  "version": "0.1.0",
+  "description": "OpenRoute: adaptive multi-pass PCB autorouter speaking the SPECCTRA design language (DSN in, SES out, do-file scripting)",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "openroute": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "tsc -p tsconfig.json && node --test \"dist/test/**/*.test.js\""
+  }
+}

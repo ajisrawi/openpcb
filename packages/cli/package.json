@@ -1,0 +1,16 @@
+{
+  "name": "@openpcb/cli",
+  "version": "0.1.0",
+  "description": "openpcb: agent-friendly command line for OpenBoard projects and OpenRoute (JSON in, JSON out)",
+  "type": "module",
+  "bin": {
+    "openpcb": "dist/cli/src/openpcb.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node --test test/features.test.mjs test/advanced.test.mjs test/schematic.test.mjs"
+  },
+  "dependencies": {
+    "@openpcb/router": "*"
+  }
+}

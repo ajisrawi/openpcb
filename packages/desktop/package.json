@@ -1,0 +1,64 @@
+{
+  "name": "@openpcb/desktop",
+  "version": "0.1.0",
+  "description": "OpenBoard + OpenRoute + OpenSchematic Windows desktop application with the openpcb agent CLI",
+  "private": true,
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "build": "node prepare.mjs && electron-builder --win dir portable --publish never"
+  },
+  "devDependencies": {
+    "electron": "33.2.1",
+    "electron-builder": "25.1.8",
+    "app-builder-bin": "^5.0.0-alpha.12"
+  },
+  "build": {
+    "appId": "org.openpcb.openboard",
+    "productName": "OpenBoard",
+    "directories": {
+      "output": "release",
+      "buildResources": "icons"
+    },
+    "files": [
+      "main.cjs",
+      "preload.cjs",
+      "app/**/*",
+      "cli/**/*",
+      "openpcb.cmd",
+      "OpenSchematic.cmd",
+      "README.txt",
+      "icons/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "cli",
+        "to": "cli"
+      },
+      {
+        "from": "openpcb.cmd",
+        "to": "openpcb.cmd"
+      },
+      {
+        "from": "README.txt",
+        "to": "README.txt"
+      },
+      {
+        "from": "OpenSchematic.cmd",
+        "to": "OpenSchematic.cmd"
+      }
+    ],
+    "win": {
+      "target": [
+        "dir",
+        "portable"
+      ],
+      "artifactName": "OpenBoard-${version}-portable.exe",
+      "icon": "icons/icon.ico"
+    },
+    "portable": {
+      "artifactName": "OpenBoard-${version}-portable.exe"
+    }
+  },
+  "author": "OpenPCB"
+}

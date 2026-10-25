@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenSchematic</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header id="topbar">
+  <span class="brand">OpenSchematic <small>capture</small></span>
+  <nav id="menubar"></nav>
+  <div class="group" id="toolbar">
+    <button data-tool="select" class="tool active" title="Select / move (Esc)">Select</button>
+    <button data-tool="part" class="tool" title="Place part (P)">Part</button>
+    <button data-tool="wire" class="tool" title="Wire (W)">Wire</button>
+    <button data-tool="bus" class="tool" title="Bus (B)">Bus</button>
+    <button data-tool="busentry" class="tool" title="Bus entry (E)">Entry</button>
+    <button data-tool="alias" class="tool" title="Net alias (N)">Alias</button>
+    <button data-tool="power" class="tool" title="Power (V)">Power</button>
+    <button data-tool="ground" class="tool" title="Ground (G)">GND</button>
+    <button data-tool="port" class="tool" title="Hierarchical port (H)">Port</button>
+    <button data-tool="offpage" class="tool" title="Off-page connector (O)">Off-page</button>
+    <button data-tool="nc" class="tool" title="No connect (Q)">NC</button>
+    <button data-tool="junction" class="tool" title="Junction (J)">Junction</button>
+    <button data-tool="block" class="tool" title="Hierarchical block (K)">Block</button>
+    <button data-tool="text" class="tool" title="Text (T)">Text</button>
+    <button data-tool="line" class="tool" title="Graphic line (L)">Line</button>
+    <button data-tool="rect" class="tool" title="Graphic rectangle">Rect</button>
+    <button data-tool="probe" class="tool" title="Highlight the net under the cursor (Ctrl+click works in Select too)">Net</button>
+  </div>
+  <div class="group">
+    <button id="btn-up" title="Go up the hierarchy (Ctrl+U)">Up</button>
+    <select id="sel-variant" title="Assembly variant"></select>
+  </div>
+</header>
+
+<main id="main">
+  <aside id="left">
+    <section>
+      <h3>Project <span><button id="btn-add-sch" class="mini" title="New schematic folder">+S</button><button id="btn-add-page" class="mini" title="New page">+P</button></span></h3>
+      <div id="tree" class="list tree"></div>
+    </section>
+    <section class="grow">
+      <h3>Library <span><button id="btn-symedit" class="mini" title="Symbol editor">Edit</button></span></h3>
+      <input id="lib-search" placeholder="search parts (name, value)">
+      <select id="lib-filter"></select>
+      <div id="lib-list" class="list"></div>
+      <canvas id="lib-preview" width="220" height="150"></canvas>
+      <div class="hint" id="lib-info"></div>
+    </section>
+  </aside>
+
+  <div id="center">
+    <div id="tabs"></div>
+    <canvas id="canvas"></canvas>
+    <div id="status"></div>
+    <div id="crumbs"></div>
+  </div>
+
+  <aside id="right">
+    <section>
+      <h3>Properties</h3>
+      <div id="props" class="props"></div>
+    </section>
+    <section>
+      <h3>Find</h3>
+      <input id="find" placeholder="reference, value, net, text">
+      <div id="find-list" class="list"></div>
+    </section>
+    <section>
+      <h3>Nets <span id="net-count"></span></h3>
+      <input id="net-filter" placeholder="filter nets">
+      <div id="net-list" class="list"></div>
+    </section>
+    <section>
+      <h3>Messages <button id="btn-erc" class="mini">ERC</button></h3>
+      <div id="erc-list" class="list"></div>
+    </section>
+  </aside>
+</main>
+
+<footer id="bottom">
+  <div id="bottom-tabs"><button data-pane="log" class="active">Session log</button><button data-pane="console">SKILL console</button><button data-pane="sim">Simulation</button></div>
+  <div id="pane-log" class="pane active"><pre id="log"></pre></div>
+  <div id="pane-console" class="pane"><pre id="con-out"></pre><input id="con-in" placeholder="SKILL: schParts() · foreach(mapcar p schParts() p~>ref) · p = schFindPart(&quot;R1&quot;) p~>value = &quot;10k&quot;"></div>
+  <div id="pane-sim" class="pane"><canvas id="plot"></canvas><div id="sim-op" class="hint"></div></div>
+</footer>
+
+<div id="menu-pop" class="menu-pop" hidden></div>
+<input type="file" id="file-in" hidden>
+<input type="file" id="file-multi" multiple hidden>
+
+<dialog id="dlg-prompt"><form method="dialog"><h3 id="prompt-title">Value</h3><input id="prompt-in" autocomplete="off"><menu><button value="cancel">Cancel</button><button value="ok" class="primary">OK</button></menu></form></dialog>
+
+<dialog id="dlg-sim">
+  <form method="dialog">
+    <h3>Simulation profile</h3>
+    <div class="props">
+      <label>Analysis <select id="sim-kind"><option value="op">Bias point</option><option value="tran">Time domain (transient)</option><option value="ac">AC sweep</option></select></label>
+      <label>Transient step / stop <span><input id="sim-tstep" value="1u"><input id="sim-tstop" value="1m"></span></label>
+      <label>AC start / stop / points per decade <span><input id="sim-f1" value="10"><input id="sim-f2" value="1Meg"><input id="sim-np" value="20"></span></label>
+      <label>Probes (nets) <input id="sim-probes" placeholder="OUT IN (empty: all)"></label>
+    </div>
+    <menu><button value="cancel">Cancel</button><button value="ok" class="primary">Run</button></menu>
+  </form>
+</dialog>
+
+<dialog id="dlg-symedit">
+  <form method="dialog" class="wide">
+    <h3>Symbol editor <small id="sym-title"></small></h3>
+    <div class="row2">
+      <div class="props">
+        <label>Library <select id="sym-lib"></select></label>
+        <label>Part <input id="sym-name"></label>
+        <label>Reference prefix <input id="sym-ref" value="U"></label>
+        <label>Unit <select id="sym-unit"></select><button type="button" id="sym-add-unit" class="mini">+unit</button></label>
+        <label>Properties <textarea id="sym-props" rows="4" placeholder="Value=..&#10;PCB Footprint=.."></textarea></label>
+        <label>Pins <textarea id="sym-pins" rows="10" placeholder="number name type x y length orient [shape] [hidden]"></textarea></label>
+        <label>Graphics <textarea id="sym-gfx" rows="6" placeholder="rect x1 y1 x2 y2 | line x1 y1 x2 y2 .. | circle cx cy r | arc cx cy r a0 a1 | text x y size text"></textarea></label>
+        <label>SPICE <input id="sym-spice" placeholder="R%r %1 %2 %v"></label>
+        <div class="hint">Mils, y down. Pin types: input output bidirectional tristate passive power open_collector open_emitter unspecified no_connect. Orient: the side the pin sticks out of the body (left right up down). Generate builds a box symbol from a pin list: <code>number name type side</code>.</div>
+      </div>
+      <canvas id="sym-preview" width="420" height="420"></canvas>
+    </div>
+    <menu><button type="button" id="sym-gen">Generate box</button><button value="cancel">Close</button><button value="ok" class="primary">Save part</button></menu>
+  </form>
+</dialog>
+
+<dialog id="dlg-variants">
+  <form method="dialog">
+    <h3>Variants</h3>
+    <p class="hint">One variant per line: <code>NAME: R5 R7 (DNP) ; R3=4k7 C2=22n (values)</code></p>
+    <textarea id="var-text" rows="8" cols="60"></textarea>
+    <menu><button value="cancel">Cancel</button><button value="ok" class="primary">Apply</button></menu>
+  </form>
+</dialog>
+
+<dialog id="dlg-text">
+  <form method="dialog" class="wide">
+    <h3 id="text-title"></h3>
+    <p class="hint" id="text-hint"></p>
+    <textarea id="text-body" rows="18"></textarea>
+    <menu><button value="cancel">Cancel</button><button value="ok" class="primary">Apply</button></menu>
+  </form>
+</dialog>
+
+<dialog id="dlg-sheet">
+  <form method="dialog" class="wide">
+    <h3>Property editor <small class="hint">(all parts of the design; edit cells, add a column, Apply)</small></h3>
+    <div class="row-tools"><input id="sheet-filter" placeholder="filter rows"> <button type="button" id="sheet-addcol">Add column</button></div>
+    <div class="sheet-wrap"><table id="sheet"></table></div>
+    <menu><button value="cancel">Cancel</button><button value="ok" class="primary">Apply</button></menu>
+  </form>
+</dialog>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

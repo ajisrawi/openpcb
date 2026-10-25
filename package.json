@@ -1,0 +1,28 @@
+{
+  "name": "openpcb-suite",
+  "version": "0.1.0",
+  "private": true,
+  "description": "OpenRoute (shape-aware PCB autorouter, DSN in / SES out), OpenBoard (browser PCB editor) and the openpcb agent CLI - our own implementation of the Allegro PCB Router / PCB Editor pair",
+  "type": "module",
+  "workspaces": [
+    "packages/router",
+    "packages/editor",
+    "packages/schematic",
+    "packages/cli",
+    "packages/desktop"
+  ],
+  "scripts": {
+    "build": "npm run build -w @openpcb/router && npm run build -w @openpcb/editor && npm run build -w @openpcb/schematic && npm run build -w @openpcb/cli",
+    "test": "npm run test -w @openpcb/router",
+    "route": "node packages/router/dist/cli.js",
+    "editor": "node packages/editor/serve.mjs",
+    "schematic": "node packages/schematic/serve.mjs",
+    "openpcb": "node packages/cli/dist/cli/src/openpcb.js",
+    "desktop": "npm run build -w @openpcb/desktop",
+    "desktop:start": "npm run start -w @openpcb/desktop"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0",
+    "typescript": "^5.6.3"
+  }
+}

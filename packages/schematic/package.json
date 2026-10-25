@@ -1,0 +1,13 @@
+{
+  "name": "@openpcb/schematic",
+  "version": "0.1.0",
+  "description": "OpenSchematic: schematic capture (OrCAD Capture / System Capture counterpart) for the OpenBoard suite",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "serve": "node serve.mjs"
+  },
+  "dependencies": {
+    "@openpcb/router": "*"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "@openpcb/editor",
+  "version": "0.1.0",
+  "description": "OpenBoard: browser-based PCB layout editor that exports SPECCTRA DSN, runs OpenRoute, and imports sessions",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "serve": "node serve.mjs"
+  },
+  "dependencies": {
+    "@openpcb/router": "*"
+  }
+}
